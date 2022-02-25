@@ -9,7 +9,7 @@ Page {
     rightBarItem: NavigationBarRow { //it is going to create a row inside the navigation bar
         //it was added to the existing navbar
         ActivityIndicatorBarItem {
-            visible: true
+            visible: dataModel.isBusy
         }
     }
 
@@ -18,7 +18,7 @@ Page {
         placeHolderText: qsTr("Rechercher un film sur IMDb...")
 
         onAccepted: {
-            console.log("search accepted: "+ text)
+            console.log("Searching for the film: "+ text)
             if(navigationStack.currentPage === searchPage) { //we check which page we are on every page has only one stack
                 console.debug("we are on the search page")
                 search(searchBar.text)
@@ -64,12 +64,19 @@ Page {
             item: listView.model.get(index)
             onSelected: {
                 console.debug("clicked")
-                showPopup(model.title, model.model) //, item.image
+                NativeDialog.confirm("Veuilez confirmer votre choix.", "Voulez-vous ajouté le film '" + model.title + "' à votre catalogue?", function(ok, model_) {
+                    if(ok) {
+                        console.debug("Vous êtes entrain de rajouter le film '" + model.title + "' à votre catalogue")
+                        storeFilmInCatalog(model)
+                    }
+                }, true)
+                // settingsDialog.open()
+                // showPopup(model.title, model.model) //, item.image
             }
         }
     }
 
-    Item {
+    /*Item {
         id: popupOverlay
         anchors.fill: parent
         visible: false // hidden by default
@@ -132,13 +139,14 @@ Page {
                 }
             }
         }
-    }
+    }*/
 
     Connections {
-      target: dataModel
-      onListingsReceived: {
-          popupOverlay.visible = false
-      }
+        target: dataModel
+        onFilmStored: {
+            console.debug("in onFilmStored function --- keys of film: " + Object.keys(film))
+            page.navigationStack.popAllExceptFirstAndPush(detailPageComponent, { model: film })
+        }
     }
 
     function search(title) {
@@ -148,7 +156,7 @@ Page {
     }
 
     function showPopup(title, model) {
-        popupOverlay.text = "Voulez-vous ajouter le film " + title + " au catalogue?"
+        popupOverlay.text = "Voulez-vous ajouter le film '" + title + "' au catalogue?"
         popupOverlay.visible = true
         popupOverlay.filmToBeStored = model
     }
@@ -159,5 +167,9 @@ Page {
         logic.storeFilm(filmToBeStored)
     }
 
+    Component {
+        id: detailPageComponent
+        FilmDetailPage { }
+    }
 
 }

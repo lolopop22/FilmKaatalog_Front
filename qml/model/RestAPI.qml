@@ -7,7 +7,7 @@ Item {
     readonly property bool busy: HttpNetworkActivityIndicator.enabled
 
     // configure request timeout
-    property int maxRequestTimeout: 20000  //20s
+    property int maxRequestTimeout: 60000  //60s
 
     // initialization
     Component.onCompleted: {
@@ -27,7 +27,9 @@ Item {
             .timeout(maxRequestTimeout)
             .then(function(res) {
                 console.debug("keys of response in RestAPI.qml: "+ Object.keys(res))
-                console.debug("résultat: " + Object.keys(res.body))
+                console.debug("keys of résultat: " + Object.keys(res.body))
+                console.debug("keys of data of résultat of response: " + Object.keys(res.body))
+                console.debug("From RestAPI.qml---- films fetched")
                 success(res.body)
             })
             .catch(function(err) { error(err) });
@@ -40,9 +42,9 @@ Item {
             .send(data)
             .then(function(res) {
                 console.debug("keys of response: "+ Object.keys(res))
-                console.debug("résultat: " + res.body)
-                success(res.body)
-                listingsReceived()
+                console.debug("keys of résultat of response: " + Object.keys(res.body))
+                success(res.body.data)
+                //listingsReceived()
             })
             .catch(function(err) { error(err) });
         }

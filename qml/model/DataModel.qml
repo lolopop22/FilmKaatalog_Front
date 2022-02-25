@@ -51,6 +51,7 @@ Item {
                                 fetchFilmsFromCatalogFailed(error)
                         })
         }
+
         //action 2 - fetch film from IMDb
         onSearchListings: {
             console.debug("Signal searchListings works!")
@@ -61,18 +62,20 @@ Item {
                 console.debug("keys of cachedSearchedFilm[0] DataModel.qml : " + Object.keys(cachedSearchedFilm[0]) )
                 _.searchedFilms = cachedSearchedFilm
             } else {
+                console.debug("research from cinemagoer (from IMDB directly)")
                 api.getFilmFromImdb(searchText,
                                     function(data) {
-                                        console.debug("keys of data in DataModel.qml: "+ Object.keys(data))
+                                        console.debug("---------------------------------------------------------------")
+                                        console.debug("keys of data from API in DataModel.qml: "+ Object.keys(data))
                                         var response = data.response
-                                        console.debug("keys of response in DataModel.qml (line 90): "+ Object.keys(response))
+                                        console.debug("keys of response of data from API in DataModel.qml: "+ Object.keys(response))
                                         var countSearch = response.count
                                         console.debug("Number of results (count): " + countSearch)
                                         var results = response.results
-                                        console.debug("reuslt from search: "+ results)
+                                        console.debug("result from search: "+ results)
                                         cache.setValue("Searched_" + searchText, results)
                                         _.searchedFilms = results
-                                        listingsReceived()
+                                        //listingsReceived()
                                     },
                                     function(error) {
                                         // action failed if no cached data
@@ -86,18 +89,44 @@ Item {
         // action 3 - storeFilm
         onStoreFilm: {
             // store with api
-            console.debug("In datamodel.qml ..... storing .....")
-            api.addFilm(film,
+            console.debug("In datamodel.qml ..... storing film.....")
+            var filmToBeStored = {}
+
+            filmToBeStored["title"] = film.title
+            filmToBeStored["runtime"] = film.runtime
+            filmToBeStored["synopsis"] = film.synopsis
+            filmToBeStored["poster"] = film.poster
+            filmToBeStored["catalog"] = 1 // this refers to the catalog id  of the catalog in which we are storing the fi
+            filmToBeStored["directors"] = []
+            filmToBeStored["producers"] = []
+            filmToBeStored["cast"] = []
+
+            console.debug("Directors: ")
+            film.directors.forEach(function (item, index) {
+              console.debug(item, index)
+              filmToBeStored["directors"].push({"name": item})
+            })
+            console.debug("Producers: ")
+            film.producers.forEach(function (item, index) {
+              console.debug(item, index)
+              filmToBeStored["producers"].push({"name": item})
+            });
+            console.debug("cast: ")
+            film.cast.forEach(function (item, index) {
+              console.debug(item, index)
+              filmToBeStored["cast"].push({"name": item})
+            });
+
+            api.addFilm(filmToBeStored,
                         function(data) {
-
-                            // update cache with newly added item details
-                            //var cachedFilms = cache.getValue("filmsFromCatalog")
-                            //cache.setValue("filmsFromCatalog", cachedFilms.push(data))
-
                             // add new item to filmsFromCatalog
                             _.filmsFromCatalog.unshift(data)
 
-                            todoStored(data)
+                            // update cache with newly added item details
+                            var cachedFilms = cache.getValue("filmsFromCatalog")
+                            cache.setValue("filmsFromCatalog", cachedFilms.push(data))
+
+                            filmStored(data)
                         },
                         function(error) {
                             console.log("We could not save the film  in the catallog - title : " + film.title)
@@ -144,11 +173,12 @@ Item {
         property bool userLoggedIn: false
 
         function createListingsModel(source) {
+            console.debug("keys of ource in createListingsModel function: " + Object.keys(source))
             return source.map(function(data) {
                 console.debug("In create listings: " + data.title)
                 var poster
                 if (data.poster == null){
-                    poster = Qt.resolvedUrl("./assets/film-reel.png")
+                    poster = Qt.resolvedUrl("../images/film-reel.png")
                 } else {
                     poster = data.poster //or data.full_size_poster
                 }

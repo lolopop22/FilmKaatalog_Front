@@ -29,10 +29,12 @@ FlickablePage {
             //width: parent.width
             //height: model && width * model.img_height / (2*model.img_width) || 0 // we are checking for the model and then we set the height (if no model then height = 0)
             anchors.horizontalCenter: parent.horizontalCenter
+            sourceSize.width: 384
+            sourceSize.height: 384
         }
 
         AppText{
-            text: model.title
+            text: "<b><i>" + model.title + "</i></b>"
             width: parent.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             font.pixelSize: sp(40)
@@ -62,7 +64,7 @@ FlickablePage {
         }*/
 
         AppText{
-            text: qsTr("Durée : ") + model.runtime
+            text: "<u><b>Durée :</b></u> " + model.runtime
             width: parent.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             font.pixelSize: sp(20)
@@ -70,7 +72,7 @@ FlickablePage {
         }
 
         AppText{
-            text: "Réalisation : " + detailPage.model.directors.join(", ")
+            text: "<u><b>Réalisation :</b></u> " + detailPage.model.directors.join(", ")
             width: parent.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             font.pixelSize: sp(20)
@@ -78,7 +80,7 @@ FlickablePage {
         }
 
         AppText{
-            text: "Producteur : " + detailPage.model.producers.join(", ")
+            text: "<u><b>Producteur :</b></u> " + detailPage.model.producers.join(", ")
             width: parent.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             font.pixelSize: sp(20)
@@ -86,7 +88,7 @@ FlickablePage {
         }
 
         AppText{
-            text: "Distribution : " + detailPage.model.cast.join(", ")
+            text: "<u><b>Distribution :</b></u>  " + detailPage.model.cast.join(", ")
             width: parent.width
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             font.pixelSize: sp(20)

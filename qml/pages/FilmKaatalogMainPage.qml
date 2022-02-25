@@ -19,6 +19,9 @@ Page {
         NavigationItem {
             title: qsTr("Catalogue")
             icon: IconType.list
+            onSelected: {
+                logic.fetchFilmsFromCatalog()
+            }
 
             NavigationStack {
                 splitView: tablet // use side-by-side view on tablets
@@ -48,7 +51,7 @@ Page {
         }
 
         // second tab
-        NavigationItem {
+        /*NavigationItem {
             title: qsTr("Profile")
             icon: IconType.circle
 
@@ -56,7 +59,7 @@ Page {
                 splitView: tablet // use side-by-side view on tablets
                 initialPage: ProfilePage { } // former TodoListPage
             }
-        }
+        }*/
 
     }
 
